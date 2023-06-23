@@ -1,0 +1,20 @@
+#!/bin/bash
+
+# Read IP address from file "ip.txt"
+ip_address=$(cat public_ip.txt)
+
+# Copy SSH key from file "key.private"
+key_file="$PWD/private_key.pem"
+
+# Set username
+username="ubuntu"
+
+# Create Ansible hosts file
+hosts_file="../ansible_hosts"
+
+touch $hosts_file
+# Write IP address and SSH details to the hosts file
+echo "[webserver]" > "$hosts_file"
+echo "$ip_address ansible_user=$username ansible_ssh_private_key_file=$key_file" >> "$hosts_file"
+
+echo "Ansible hosts file created successfully!"

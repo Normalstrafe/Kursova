@@ -1,0 +1,39 @@
+---
+- name: Clone and Run Python App
+  hosts: all
+  become: true
+
+  vars:
+    app_directory: /var/repo
+    git_repo_url: https://github.com/Normalstrafe/Kursova
+    python_app_entrypoint: web/app.py
+
+  tasks:
+    - name: Install Git and Python
+      apt:
+        name:
+          - git
+          - python3
+          - python3-pip
+        state: present
+
+    - name: Clone Git Repository
+      git:
+        repo: "{{ git_repo_url }}"
+        dest: "{{ app_directory }}"
+        clone: yes
+
+    - name: Install Flask
+      pip:
+        name: flask
+        executable: pip3
+        state: present
+
+    - name: Run Python App
+      shell: |
+        cd "{{ app_directory }}"
+        nohup python3 "{{ python_app_entrypoint }}" > /dev/null 2>&1 &
+      async: 0
+      poll: 0
+      become: true
+      ignore_errors: true
